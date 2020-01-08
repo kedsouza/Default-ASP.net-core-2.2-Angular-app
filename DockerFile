@@ -1,13 +1,11 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2
 
 ENV HOME /app
-#ENV ASPNETCORE_URLS=http://+:8080
 
 COPY ./bin/Debug/netcoreapp2.2/publish /app
 
 RUN groupadd -r dotnet && useradd -m -g dotnet dotnet
 
-#COPY resources/rootca.cert /usr/local/share/ca-certificates/allocations.tjxcloud.com.crt
 COPY cmd.sh	/bin/cmd.sh
 
 RUN update-ca-certificates
@@ -27,5 +25,5 @@ ENV ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
 
 USER dotnet
 WORKDIR /home/site/wwwroot
-# HEALTHCHECK CMD curl --fail http://localhost:8080 || exit 1
+
 ENTRYPOINT ["/bin/cmd.sh"]
