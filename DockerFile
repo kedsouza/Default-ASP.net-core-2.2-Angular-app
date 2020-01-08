@@ -1,0 +1,31 @@
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2
+
+ENV HOME /app
+#ENV ASPNETCORE_URLS=http://+:8080
+
+COPY ./bin/Debug/netcoreapp2.2/publish /app
+
+RUN groupadd -r dotnet && useradd -m -g dotnet dotnet
+
+#COPY resources/rootca.cert /usr/local/share/ca-certificates/allocations.tjxcloud.com.crt
+COPY cmd.sh	/bin/cmd.sh
+
+RUN update-ca-certificates
+
+RUN chmod -R 0744 /app && \
+	chown -R dotnet:dotnet /app && \
+	chmod a+rwx /bin/cmd.sh
+
+EXPOSE 8080
+
+ENV PORT 8080
+ENV WEBSITE_ROLE_INSTANCE_ID localRoleInstance
+ENV WEBSITE_INSTANCE_ID localInstance
+ENV PATH ${PATH}:/home/site/wwwroot
+ENV ASPNETCORE_URLS=http://0.0.0.0:8080
+ENV ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+
+USER dotnet
+WORKDIR /home/site/wwwroot
+# HEALTHCHECK CMD curl --fail http://localhost:8080 || exit 1
+ENTRYPOINT ["/bin/cmd.sh"]
