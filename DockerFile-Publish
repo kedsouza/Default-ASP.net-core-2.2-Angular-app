@@ -1,8 +1,31 @@
+# BUILD CONTAINER
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build-env
+
+# Install Node JS required to build
+RUN apt-get update \ 
+	&& curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+	&& apt-get install -y --no-install-recommends \
+	apt-utils \
+ 	nodejs \
+	npm
+
+WORKDIR /build
+
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copy everything else and build
+COPY . ./
+
+RUN dotnet publish -c Release -o $PWD/app
+
+# RUN CONTAINER
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2
 
 ENV HOME /app
 
-COPY /app /app
+COPY --from=build-env /build/app /app
 
 RUN groupadd -r dotnet && useradd -m -g dotnet dotnet
 
