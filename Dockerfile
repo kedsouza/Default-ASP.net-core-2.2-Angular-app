@@ -23,7 +23,7 @@ ENV PATH ${PATH}:/home/site/wwwroot
 ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 ENV ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
 
-USER dotnet
+USER root
 WORKDIR /home/site/wwwroot
 
 ENTRYPOINT ["/bin/cmd.sh"]
